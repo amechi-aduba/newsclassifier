@@ -1,50 +1,86 @@
-# 📰 Fake News Classifier
+title: "Fake News Classifier"
+subtitle: "Detect true vs. fake articles with Naive Bayes, TF-IDF LogReg, and MiniLM + LogReg"
+table_of_contents:
+  - Motivation
+  - Dataset
+  - Project Structure
+  - Installation
+  - How It Works
+  - Results
+  - Running the App
+  - Limitations & Future Work
+  - Credits
 
-This project is a machine learning-based Fake News Classifier built as a capstone for an Applied Machine Learning course. It leverages NLP techniques and two classification models to detect whether a news article is **real** or **fake**, with deployment via a simple Gradio web interface.
+motivation: |
+  Misinformation travels faster than fact-checking.  
+  This project offers an instant credibility check so readers can decide whether to trust, ignore, or further verify online news.
 
-## 📌 Problem Statement
+dataset:
+  name: "Kaggle Fake & Real News"
+  link: "https://www.kaggle.com/datasets/clmentbisaillon/fake-and-real-news-dataset"
+  size: "≈ 44 k articles"
+  classes:
+    true: 1
+    fake: 0
+  columns_used: ["text", "label"]
+  years: "2015 – 2017"
 
-The rise of misinformation and biased news in modern media presents a critical challenge. This project aims to identify fake news articles using machine learning, helping users evaluate the credibility of the content they read.
+project_structure:
+  notebook: "Jupyter analysis + training"
+  miniLM: "saved Sentence-Transformer encoder"
+  miniLM_lr_pkl: "Logistic-Regression on embeddings"
+  nb_pkl: "Naive-Bayes (TF-IDF) model"
+  lr_pkl: "LogReg (TF-IDF) model"
+  tfidf_pkl: "TF-IDF vectorizer"
+  app_py: "Gradio interface"
+  requirements_txt: "pip/conda dependencies"
 
-## 📊 Dataset
+installation:
+  steps:
+    - "git clone https://github.com/<user>/fake-news-classifier.git && cd fake-news-classifier"
+    - |
+      conda create -n fake-news python=3.10 -y  
+      conda activate fake-news
+    - "pip install -r requirements.txt  # downloads MiniLM (~90 MB)"
 
-- **Source**: [Kaggle Fake and Real News Dataset](https://www.kaggle.com/datasets/clmentbisaillon/fake-and-real-news-dataset)
-- Contains over **45,000** labeled articles split into `Fake.csv` and `True.csv`.
+how_it_works:
+  models:
+    - mode: "Fast"
+      pipeline: "TF-IDF → Naive Bayes"
+      pros: "Instant predictions; tiny model"
+      cons: "Lower F1 (≈ 93 %)"
+    - mode: "Accurate"
+      pipeline: "TF-IDF → Logistic Regression"
+      pros: "98–99 % in-dataset accuracy"
+      cons: "Vocab-dependent; mislabels unfamiliar outlets"
+    - mode: "Contextual"
+      pipeline: "MiniLM embeddings → Logistic Regression"
+      pros: "≈ 98 % F1; robust; CPU-friendly"
+      cons: "90 MB encoder; embeds add ~100 ms"
 
-## 🧪 Features & Workflow
+results:
+  metrics:
+    - model: "Naive Bayes"
+      accuracy: 0.93
+      f1: 0.93
+    - model: "TF-IDF LogReg"
+      accuracy: 0.99
+      f1: 0.99
+    - model: "MiniLM + LogReg"
+      accuracy: 0.98
+      f1: 0.98
+  note: "Metrics computed on a 20 % hold-out split."
 
-### ✅ Preprocessing
-- Tokenization
-- Lowercasing
-- Removal of punctuation and digits
-- Stopword filtering
-- Lemmatization
+running_app:
+  command: "python app.py  # opens http://127.0.0.1:7860"
+  ui: "Paste article → select Fast / Accurate / Contextual → receive label + confidence"
 
-### ✅ Models Used
-- **Naive Bayes (Fast Mode)**
-- **Logistic Regression (Accurate Mode)**
+limitations_future_work:
+  - "Dataset skews to U.S. politics; expand to newer/global sources"
+  - "Add explainability (SHAP, LIME) to show which sentences drive decisions"
+  - "Extend to multilingual news"
 
-### ✅ Performance
-| Model               | Accuracy | Precision | Recall | F1 Score |
-|--------------------|----------|-----------|--------|----------|
-| Multinomial NB      | ~93%     | 0.93      | 0.93   | 0.93     |
-| Logistic Regression | ~99%     | 0.99      | 0.99   | 0.99     |
-
-### ✅ Deployment
-- Interactive web UI built with **Gradio**
-- Users can paste an article and select:
-  - 🔹 Fast Mode (Naive Bayes)
-  - 🔸 Accurate Mode (Logistic Regression)
-- Output includes **classification** (Fake/True) and **confidence score**
-
-## 🚀 Running Locally
-
-```bash
-git clone https://github.com/amechi-aduba/newsclassifier.git
-cd fake-news-classifier
-
-# Install dependencies
-pip install -r requirements.txt
-
-# Run the Gradio app
-python app.py
+credits:
+  dataset: "Clément Bisaillon (Kaggle)"
+  miniLM: "Sentence-Transformers: Reimers & Gurevych, 2020"
+  note: "Built as a capstone for Applied Machine Learning @ Clark University"
