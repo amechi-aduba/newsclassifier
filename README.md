@@ -55,7 +55,7 @@ This project offers an **instant credibility check** so readers can decide wheth
   - 🔶 Contextual (MiniLM LogReg)  
 - Returns **label** (True / Fake) **+ confidence %**
 
-## future_work:
+## future work:
   - "Data freshness — add 2020-2025 multilingual news to stay current."
   - "Explainability — integrate SHAP/LIME to highlight sentences driving predictions."
   - "Active learning — let users flag mistakes and retrain on new feedback."
