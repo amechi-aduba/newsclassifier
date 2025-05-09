@@ -1,4 +1,4 @@
-title: "Fake News Classifier"
+## "Fake News Classifier"
 subtitle: "Detect true vs. fake articles with Naive Bayes, TF-IDF LogReg, and MiniLM + LogReg"
 table_of_contents:
   - Motivation
