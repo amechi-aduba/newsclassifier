@@ -1,86 +1,87 @@
-## "Fake News Classifier"
-# "Detect true vs. fake articles with Naive Bayes, TF-IDF LogReg, and MiniLM + LogReg"
-table_of_contents:
-  - Motivation
-  - Dataset
-  - Project Structure
-  - Installation
-  - How It Works
-  - Results
-  - Running the App
-  - Limitations & Future Work
-  - Credits
+# 📰 Fake News Classifier — Naive Bayes | TF-IDF LogReg | MiniLM Embeddings
 
-motivation: |
-  Misinformation travels faster than fact-checking.  
-  This project offers an instant credibility check so readers can decide whether to trust, ignore, or further verify online news.
+Capstone project for **Applied Machine Learning** — detects whether a news article is **True** or **Fake** via three NLP pipelines, exposed through a Gradio web interface.
 
-dataset:
-  name: "Kaggle Fake & Real News"
-  link: "https://www.kaggle.com/datasets/clmentbisaillon/fake-and-real-news-dataset"
-  size: "≈ 44 k articles"
-  classes:
-    true: 1
-    fake: 0
-  columns_used: ["text", "label"]
-  years: "2015 – 2017"
+---
 
-project_structure:
-  notebook: "Jupyter analysis + training"
-  miniLM: "saved Sentence-Transformer encoder"
-  miniLM_lr_pkl: "Logistic-Regression on embeddings"
-  nb_pkl: "Naive-Bayes (TF-IDF) model"
-  lr_pkl: "LogReg (TF-IDF) model"
-  tfidf_pkl: "TF-IDF vectorizer"
-  app_py: "Gradio interface"
-  requirements_txt: "pip/conda dependencies"
+## 📌 Problem Statement
+Misinformation spreads faster than fact-checking.  
+This project offers an **instant credibility check** so readers can decide whether to trust, ignore, or further verify online articles.
 
-installation:
-  steps:
-    - "git clone https://github.com/<user>/fake-news-classifier.git && cd fake-news-classifier"
-    - |
-      conda create -n fake-news python=3.10 -y  
-      conda activate fake-news
-    - "pip install -r requirements.txt  # downloads MiniLM (~90 MB)"
+---
 
-how_it_works:
-  models:
-    - mode: "Fast"
-      pipeline: "TF-IDF → Naive Bayes"
-      pros: "Instant predictions; tiny model"
-      cons: "Lower F1 (≈ 93 %)"
-    - mode: "Accurate"
-      pipeline: "TF-IDF → Logistic Regression"
-      pros: "98–99 % in-dataset accuracy"
-      cons: "Vocab-dependent; mislabels unfamiliar outlets"
-    - mode: "Contextual"
-      pipeline: "MiniLM embeddings → Logistic Regression"
-      pros: "≈ 98 % F1; robust; CPU-friendly"
-      cons: "90 MB encoder; embeds add ~100 ms"
+## 📊 Dataset
+| Item | Details |
+|------|---------|
+| **Source** | [Kaggle – Fake & Real News](https://www.kaggle.com/datasets/clmentbisaillon/fake-and-real-news-dataset) |
+| **Size**  | ≈ 44 k labelled articles (`True.csv`, `Fake.csv`) |
+| **Years** | 2015 – 2017 |
+| **Columns used** | `text` and `label` |
 
-results:
-  metrics:
-    - model: "Naive Bayes"
-      accuracy: 0.93
-      f1: 0.93
-    - model: "TF-IDF LogReg"
-      accuracy: 0.99
-      f1: 0.99
-    - model: "MiniLM + LogReg"
-      accuracy: 0.98
-      f1: 0.98
-  note: "Metrics computed on a 20 % hold-out split."
+---
 
-running_app:
-  command: "python app.py  # opens http://127.0.0.1:7860"
-  ui: "Paste article → select Fast / Accurate / Contextual → receive label + confidence"
+## 🧪 Features & Workflow
 
-limitations_future_work:
-  - "Dataset skews to U.S. politics; expand to newer/global sources"
-  - "Add explainability (SHAP, LIME) to show which sentences drive decisions"
-  - "Extend to multilingual news"
+### ✅ Pre-processing
+| Step | Purpose |
+|------|---------|
+| Lower-case, remove punctuation/digits | Normalise text |
+| Tokenisation + NLTK stop-word filter | Drop glue words |
+| WordNet lemmatisation | Merge word variants |
+| **TF-IDF (5 k terms)** | For classical models |
+| **MiniLM sentence embedding (384-dim)** | For contextual model |
 
-credits:
-  dataset: "Clément Bisaillon (Kaggle)"
-  miniLM: "Sentence-Transformers: Reimers & Gurevych, 2020"
-  note: "Built as a capstone for Applied Machine Learning @ Clark University"
+### ✅ Models Implemented
+| Mode | Pipeline | Relative Speed | Strengths |
+|------|----------|----------------|-----------|
+| **Fast** | TF-IDF → Multinomial Naive Bayes | ⚡ ms | Tiny, instant |
+| **Accurate** | TF-IDF → Logistic Regression | 🔸 tens ms | 99 % in-dataset accuracy |
+| **Contextual** | MiniLM embedding → Logistic Regression | 🔹 ~150-200 ms | Best generalisation to unseen outlets |
+
+### ✅ Performance (20 % hold-out)
+| Model | Accuracy | Precision | Recall | F1 |
+|-------|----------|-----------|--------|----|
+| Naive Bayes | 0.93 | 0.93 | 0.93 | 0.93 |
+| TF-IDF LogReg | **0.99** | 0.99 | 0.99 | 0.99 |
+| MiniLM + LogReg | **0.98** | 0.98 | 0.98 | 0.98 |
+
+*MiniLM sacrifices ~1 % in-dataset accuracy for much stronger robustness to brand-new sources.*
+
+### ✅ Deployment
+- **Gradio** web app (`app.py`)
+- Paste article → choose mode  
+  - 🔹 Fast (Naive Bayes)  
+  - 🔸 Accurate (TF-IDF LogReg)  
+  - 🔶 Contextual (MiniLM LogReg)  
+- Returns **label** (True / Fake) **+ confidence %**
+
+## future_work:
+  - "Data freshness — add 2020-2025 multilingual news to stay current."
+  - "Explainability — integrate SHAP/LIME to highlight sentences driving predictions."
+  - "Active learning — let users flag mistakes and retrain on new feedback."
+  - "Cloud deployment — package as a Hugging Face Space or Docker image for easy sharing."
+
+## credits:
+  dataset: "Clément Bisaillon — Fake & Real News (Kaggle)"
+  miniLM: "Sentence-Transformers — Reimers & Gurevych (2020)"
+  gradio: "Abubakar Abid et al."
+  author: "Created by **Amechi Aduba** as a capstone for *Applied Machine Learning* @ Clark University"
+---
+
+## 🚀 Running Locally
+
+```bash
+git clone https://github.com/<your-username>/fake-news-classifier.git
+cd fake-news-classifier
+
+# 1️⃣  (Recommended) create clean env
+conda create -n fake-news python=3.10 -y
+conda activate fake-news
+
+# 2️⃣  install dependencies
+pip install -r requirements.txt      # downloads MiniLM (~90 MB)
+
+# 3️⃣  launch Gradio UI
+python app.py                        # opens http://127.0.0.1:7860
+
+
