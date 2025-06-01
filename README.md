@@ -1,6 +1,6 @@
 # 📰 Fake News Classifier — Naive Bayes | TF-IDF LogReg | MiniLM Embeddings
 
-Access at: https://huggingface.co/spaces/amechi21/fake-news-detector
+Access at: (https://amechi21-fake-news-detector.hf.space/)
 
 
 Capstone project for **Applied Machine Learning** — detects whether a news article is **True** or **Fake** via three NLP pipelines, exposed through a Gradio web interface.
